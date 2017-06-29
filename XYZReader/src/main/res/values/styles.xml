@@ -18,9 +18,9 @@
 <resources>
 
     <style name="Theme.Bacon" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#616161</item>
-        <item name="colorPrimaryDark">#373737</item>
-        <item name="colorAccent">#f06292</item>
+        <item name="colorPrimary">#90a4ae</item>
+        <item name="colorPrimaryDark">#62757f</item>
+        <item name="colorAccent">#ff7043</item>
     </style>
 
 </resources>
