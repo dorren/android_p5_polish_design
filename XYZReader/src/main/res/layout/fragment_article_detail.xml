@@ -93,19 +93,6 @@
 
             </com.example.xyzreader.ui.MaxWidthLinearLayout>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/share_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:src="@drawable/ic_share"
-                app:borderWidth="0dp"
-                app:elevation="6dp"
-                app:fabSize="normal"
-                app:layout_anchor="@id/meta_bar"
-                app:layout_anchorGravity="bottom|right|end"
-                app:pressedTranslationZ="12dp" />
         </android.support.design.widget.CoordinatorLayout>
     </com.example.xyzreader.ui.ObservableScrollView>
 
@@ -124,4 +111,15 @@
         -->
 
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/share_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_share"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:fabSize="normal"
+        android:layout_gravity="bottom|right|end"
+        app:pressedTranslationZ="12dp" />
 </com.example.xyzreader.ui.DrawInsetsFrameLayout>
