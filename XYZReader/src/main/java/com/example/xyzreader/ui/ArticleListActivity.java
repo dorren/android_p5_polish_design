@@ -67,13 +67,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         //mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.main_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Thank you for using " + getString(R.string.app_name), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
@@ -81,6 +74,11 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             refresh();
         }
+    }
+
+    public void clickFab(View view){
+        Snackbar.make(view, "Thank you for using " + getString(R.string.app_name), Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 
     private void refresh() {
