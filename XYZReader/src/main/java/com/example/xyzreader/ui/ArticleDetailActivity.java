@@ -3,6 +3,7 @@ package com.example.xyzreader.ui;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
@@ -12,6 +13,9 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Slide;
+import android.transition.TransitionInflater;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,11 +105,19 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
 
         if (savedInstanceState == null) {
+            Intent intent = getIntent();
             if (getIntent() != null && getIntent().getData() != null) {
                 mStartId = ItemsContract.Items.getItemId(getIntent().getData());
                 mSelectedItemId = mStartId;
             }
+//            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+//                mStartId = getIntent().getIntExtra(Intent.EXTRA_TEXT, 0);
+//                mSelectedItemId = mStartId;
+//            }
         }
+
+//        Slide slide_in = (Slide) TransitionInflater.from(this).inflateTransition(R.transition.slide_in);
+//        getWindow().setEnterTransition(slide_in);
     }
 
     @Override

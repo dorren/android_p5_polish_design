@@ -1,5 +1,7 @@
 package com.example.xyzreader.ui;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,15 +20,20 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.transition.Slide;
+import android.transition.TransitionInflater;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -68,6 +75,14 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.main_fab);
 
+        //Slide slide_out = (Slide) TransitionInflater.from(this).inflateTransition(R.transition.slide_out);
+//        Slide slide = new Slide();
+//        slide.setDuration(1000);
+//        slide.setSlideEdge(Gravity.RIGHT);
+//        getWindow().setExitTransition(slide);
+//        getWindow().setEnterTransition(slide);
+
+
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
 
@@ -82,20 +97,31 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     private void refresh() {
-        startService(new Intent(this, UpdaterService.class));
+//        startService(new Intent(this, UpdaterService.class));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(mRefreshingReceiver,
-                new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+//        registerReceiver(mRefreshingReceiver,
+//                new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+        Log.d(TAG, "--- renter() ");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(mRefreshingReceiver);
+//        unregisterReceiver(mRefreshingReceiver);
     }
 
     private boolean mIsRefreshing = false;
@@ -121,7 +147,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        Adapter adapter = new Adapter(cursor);
+        Adapter adapter = new Adapter(this, cursor);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
@@ -131,6 +157,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         GridLayoutManager layoutManager
                 = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);
     }
 
     @Override
@@ -139,9 +166,11 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
+        private Context mContext;
         private Cursor mCursor;
 
-        public Adapter(Cursor cursor) {
+        public Adapter(Context context, Cursor cursor) {
+            mContext = context;
             mCursor = cursor;
         }
 
@@ -158,8 +187,24 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                    ImageView img = (ImageView)view.findViewById(R.id.thumbnail);
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(ArticleListActivity.this,
+                            img, img.getTransitionName()
+                    ).toBundle();
+
+//                    Intent intent = new Intent(mContext, ArticleDetailActivity.class);
+//                    intent.putExtra(Intent.EXTRA_TEXT, vh.getAdapterPosition());
+//                    startActivity(intent, bundle);
+
+//                    startActivity(new Intent(Intent.ACTION_VIEW,
+//                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), bundle);
+
+                    // test EmptyActivity
+                    Intent intent = new Intent(mContext, EmptyActivity.class);
+                    mCursor.moveToPosition(vh.getAdapterPosition());
+                    String imageURL = mCursor.getString(ArticleLoader.Query.THUMB_URL);
+                    intent.putExtra(Intent.EXTRA_TEXT, imageURL);
+                    startActivity(intent, bundle);
                 }
             });
             return vh;
@@ -198,10 +243,12 @@ public class ArticleListActivity extends AppCompatActivity implements
             }
 
 
-            holder.thumbnailView.setImageUrl(
-                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
+            String imageURL = mCursor.getString(ArticleLoader.Query.THUMB_URL);
+            holder.thumbnailView.setImageUrl(imageURL,
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+
+            //Picasso.with(mContext).load(imageURL).into(holder.thumbnailView);
         }
 
         @Override
@@ -212,6 +259,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public DynamicHeightNetworkImageView thumbnailView;
+        //public ImageView thumbnailView;
         public TextView titleView;
         public TextView subtitleView;
 

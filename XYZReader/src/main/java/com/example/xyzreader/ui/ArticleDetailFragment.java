@@ -150,7 +150,7 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
-        bindViews();
+        //bindViews();
         updateStatusBar();
         return mRootView;
     }
@@ -196,6 +196,7 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     private void bindViews() {
+        Log.d(TAG, "bindViews()");
         if (mRootView == null) {
             return;
         }
@@ -288,7 +289,7 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
-        bindViews();
+        //bindViews();
     }
 
     public int getUpButtonFloor() {
