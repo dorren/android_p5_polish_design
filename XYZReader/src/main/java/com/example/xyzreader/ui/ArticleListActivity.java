@@ -1,12 +1,10 @@
 package com.example.xyzreader.ui;
 
-import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,14 +14,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -33,7 +27,6 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
-import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,14 +67,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         //mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.main_fab);
-
-        //Slide slide_out = (Slide) TransitionInflater.from(this).inflateTransition(R.transition.slide_out);
-//        Slide slide = new Slide();
-//        slide.setDuration(1000);
-//        slide.setSlideEdge(Gravity.RIGHT);
-//        getWindow().setExitTransition(slide);
-//        getWindow().setEnterTransition(slide);
-
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
@@ -192,19 +177,24 @@ public class ArticleListActivity extends AppCompatActivity implements
                             img, img.getTransitionName()
                     ).toBundle();
 
-//                    Intent intent = new Intent(mContext, ArticleDetailActivity.class);
-//                    intent.putExtra(Intent.EXTRA_TEXT, vh.getAdapterPosition());
-//                    startActivity(intent, bundle);
-
-//                    startActivity(new Intent(Intent.ACTION_VIEW,
-//                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), bundle);
-
-                    // test EmptyActivity
-                    Intent intent = new Intent(mContext, EmptyActivity.class);
-                    mCursor.moveToPosition(vh.getAdapterPosition());
-                    String imageURL = mCursor.getString(ArticleLoader.Query.THUMB_URL);
-                    intent.putExtra(Intent.EXTRA_TEXT, imageURL);
-                    startActivity(intent, bundle);
+                    boolean useMock = false;
+                    if(!useMock) {
+                        boolean animate = true;
+                        if(animate) {
+                            startActivity(new Intent(Intent.ACTION_VIEW,
+                                    ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), bundle);
+                        }else{ // don't animate
+                            startActivity(new Intent(Intent.ACTION_VIEW,
+                                    ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                        }
+                    }else {
+                        // test EmptyActivity
+                        Intent intent = new Intent(mContext, EmptyActivity.class);
+                        mCursor.moveToPosition(vh.getAdapterPosition());
+                        String imageURL = mCursor.getString(ArticleLoader.Query.THUMB_URL);
+                        intent.putExtra(Intent.EXTRA_TEXT, imageURL);
+                        startActivity(intent, bundle);
+                    }
                 }
             });
             return vh;
@@ -247,8 +237,6 @@ public class ArticleListActivity extends AppCompatActivity implements
             holder.thumbnailView.setImageUrl(imageURL,
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
-
-            //Picasso.with(mContext).load(imageURL).into(holder.thumbnailView);
         }
 
         @Override
@@ -259,14 +247,12 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public DynamicHeightNetworkImageView thumbnailView;
-        //public ImageView thumbnailView;
         public TextView titleView;
         public TextView subtitleView;
 
         public ViewHolder(View view) {
             super(view);
             thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
-            //thumbnailView = (ImageView) view.findViewById(R.id.thumbnail);
 
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);

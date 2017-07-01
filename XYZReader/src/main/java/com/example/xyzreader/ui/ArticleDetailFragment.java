@@ -1,7 +1,9 @@
 package com.example.xyzreader.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -196,7 +198,11 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     private void bindViews() {
-        Log.d(TAG, "bindViews()");
+        Log.d(TAG, "bindViews() itemId " + mItemId);
+        for(StackTraceElement e : Thread.currentThread().getStackTrace()){
+            //Log.d(TAG, e.toString());
+        }
+
         if (mRootView == null) {
             return;
         }
@@ -207,7 +213,7 @@ public class ArticleDetailFragment extends Fragment implements
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
 
 
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
+        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "fonts/Rosario-Regular.ttf"));
 
         if (mCursor != null) {
             mRootView.setAlpha(0);
@@ -269,6 +275,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        Log.d(TAG, "onLoadFinished " + cursor.getPosition());
+
         if (!isAdded()) {
             if (cursor != null) {
                 cursor.close();
@@ -290,6 +298,13 @@ public class ArticleDetailFragment extends Fragment implements
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
         //bindViews();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.e(TAG, "onAttach()");
+
     }
 
     public int getUpButtonFloor() {

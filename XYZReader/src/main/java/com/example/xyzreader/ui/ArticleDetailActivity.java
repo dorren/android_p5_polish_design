@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -30,6 +31,7 @@ import com.example.xyzreader.data.ItemsContract;
  */
 public class ArticleDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String TAG = "ArticleDetailActivity";
 
     private Cursor mCursor;
     private long mStartId;
@@ -87,7 +89,8 @@ public class ArticleDetailActivity extends AppCompatActivity
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onSupportNavigateUp();
+                //onSupportNavigateUp();
+                finishAfterTransition();
             }
         });
 
@@ -108,6 +111,7 @@ public class ArticleDetailActivity extends AppCompatActivity
             Intent intent = getIntent();
             if (getIntent() != null && getIntent().getData() != null) {
                 mStartId = ItemsContract.Items.getItemId(getIntent().getData());
+                Log.d(TAG, "onCreate() mStartId " + mStartId);
                 mSelectedItemId = mStartId;
             }
 //            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -127,6 +131,8 @@ public class ArticleDetailActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        Log.d(TAG, "onLoadFinished " + cursor.getPosition() + "/" + cursor.getCount());
+
         mCursor = cursor;
         mPagerAdapter.notifyDataSetChanged();
 
@@ -136,6 +142,7 @@ public class ArticleDetailActivity extends AppCompatActivity
             // TODO: optimize
             while (!mCursor.isAfterLast()) {
                 if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
+                    Log.d(TAG, "onLoadFinished loop " + cursor.getPosition());
                     final int position = mCursor.getPosition();
                     mPager.setCurrentItem(position, false);
                     break;
@@ -144,12 +151,13 @@ public class ArticleDetailActivity extends AppCompatActivity
             }
             mStartId = 0;
         }
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
-        mPagerAdapter.notifyDataSetChanged();
+        //mPagerAdapter.notifyDataSetChanged();
     }
 
     public void onUpButtonFloorChanged(long itemId, ArticleDetailFragment fragment) {
@@ -181,6 +189,10 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
+            Log.d(TAG, "getItem " + position);
+            for(StackTraceElement e : Thread.currentThread().getStackTrace()){
+                //Log.d(TAG, "getItem " + position + ", " + e.toString());
+            }
             mCursor.moveToPosition(position);
             return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
         }
