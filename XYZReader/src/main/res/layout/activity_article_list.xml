@@ -72,9 +72,4 @@
         app:pressedTranslationZ="12dp"
         android:onClick="clickFab"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="wtf"/>
-
 </android.support.design.widget.CoordinatorLayout>

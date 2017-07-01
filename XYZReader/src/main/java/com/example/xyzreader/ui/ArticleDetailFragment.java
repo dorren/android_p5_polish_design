@@ -139,7 +139,12 @@ public class ArticleDetailFragment extends Fragment implements
                 getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
                 mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
                 updateStatusBar();
-                showFullBody();
+
+                if(mScrollY > 1000) {
+                    showFullBody();
+                }else{
+                    showShortBody();
+                }
             }
         });
 
@@ -332,7 +337,6 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onStop() {
         super.onStop();
-        showShortBody();
     }
 
     public int getUpButtonFloor() {
