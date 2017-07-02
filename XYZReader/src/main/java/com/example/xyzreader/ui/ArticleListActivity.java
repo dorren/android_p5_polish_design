@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -82,14 +83,14 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     private void refresh() {
-//        startService(new Intent(this, UpdaterService.class));
+        startService(new Intent(this, UpdaterService.class));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-//        registerReceiver(mRefreshingReceiver,
-//                new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+        registerReceiver(mRefreshingReceiver,
+                new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
     }
 
     @Override
