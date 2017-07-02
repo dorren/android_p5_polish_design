@@ -59,9 +59,16 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
         setContentView(R.layout.activity_article_detail);
 
-        getLoaderManager().initLoader(0, null, this);
+        if (savedInstanceState == null) {
+            Intent intent = getIntent();
+            if (intent != null && intent.getData() != null) {
+                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
+                Log.d(TAG, "onCreate() mStartId " + mStartId);
+                mSelectedItemId = mStartId;
+            }
+        }
 
-        mPagerAdapter = new MyPagerAdapter(getFragmentManager());
+        mPagerAdapter = new MyPagerAdapter(getFragmentManager(), mStartId);
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mPagerAdapter);
         mPager.setPageMargin((int) TypedValue
@@ -112,15 +119,8 @@ public class ArticleDetailActivity extends AppCompatActivity
                 }
             });
         }
-
-        if (savedInstanceState == null) {
-            Intent intent = getIntent();
-            if (intent != null && intent.getData() != null) {
-                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
-                Log.d(TAG, "onCreate() mStartId " + mStartId);
-                mSelectedItemId = mStartId;
-            }
-        }
+        postponeEnterTransition();
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -172,11 +172,13 @@ public class ArticleDetailActivity extends AppCompatActivity
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
         public int currentPosition;
+        private long primaryItemId;
         private HashMap<Integer, ArticleDetailFragment> items;
 
-        public MyPagerAdapter(FragmentManager fm) {
+        public MyPagerAdapter(FragmentManager fm, long primaryId) {
             super(fm);
             items = new HashMap<Integer, ArticleDetailFragment>();
+            primaryItemId = primaryId;
         }
 
         @Override
@@ -199,8 +201,10 @@ public class ArticleDetailActivity extends AppCompatActivity
             ArticleDetailFragment item = items.get(position);
             if(item == null) {
                 mCursor.moveToPosition(position);
-                item = ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
-                Log.d(TAG, "getItem item id " + mCursor.getLong(ArticleLoader.Query._ID));
+                long itemId = mCursor.getLong(ArticleLoader.Query._ID);
+                boolean isPrimary = (itemId == primaryItemId);
+
+                item = ArticleDetailFragment.newInstance(itemId, isPrimary);
                 items.put(position, item);
             }
             return item;

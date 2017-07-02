@@ -49,10 +49,12 @@ public class ArticleDetailFragment extends Fragment implements
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_ITEM_IS_PRIMARY = "item_is_primary";
     private static final float PARALLAX_FACTOR = 1.25f;
 
     private Cursor mCursor;
     private long mItemId;
+    private boolean mIsPrimary;
     private View mRootView;
     private int mMutedColor = 0xFF333333;
     private ObservableScrollView mScrollView;
@@ -81,9 +83,10 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId) {
+    public static ArticleDetailFragment newInstance(long itemId, boolean isPrimary) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
+        arguments.putBoolean(ARG_ITEM_IS_PRIMARY, isPrimary);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -95,6 +98,7 @@ public class ArticleDetailFragment extends Fragment implements
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
+            mIsPrimary = getArguments().getBoolean(ARG_ITEM_IS_PRIMARY);
         }
 
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
@@ -319,6 +323,10 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         bindViews();
+        if(mIsPrimary) {
+            Log.d(TAG, "startTransition " + mItemId);
+            getActivity().startPostponedEnterTransition();
+        }
     }
 
     @Override
