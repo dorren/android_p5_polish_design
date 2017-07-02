@@ -26,6 +26,10 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
  */
@@ -90,6 +94,8 @@ public class ArticleDetailActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 //onSupportNavigateUp();
+                Log.d(TAG, "onCLick() pager.position " + mPagerAdapter.currentPosition);
+                mPagerAdapter.cleanFragment();
                 finishAfterTransition();
             }
         });
@@ -109,19 +115,12 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             Intent intent = getIntent();
-            if (getIntent() != null && getIntent().getData() != null) {
+            if (intent != null && intent.getData() != null) {
                 mStartId = ItemsContract.Items.getItemId(getIntent().getData());
                 Log.d(TAG, "onCreate() mStartId " + mStartId);
                 mSelectedItemId = mStartId;
             }
-//            if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-//                mStartId = getIntent().getIntExtra(Intent.EXTRA_TEXT, 0);
-//                mSelectedItemId = mStartId;
-//            }
         }
-
-//        Slide slide_in = (Slide) TransitionInflater.from(this).inflateTransition(R.transition.slide_in);
-//        getWindow().setEnterTransition(slide_in);
     }
 
     @Override
@@ -142,7 +141,6 @@ public class ArticleDetailActivity extends AppCompatActivity
             // TODO: optimize
             while (!mCursor.isAfterLast()) {
                 if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    Log.d(TAG, "onLoadFinished loop " + cursor.getPosition());
                     final int position = mCursor.getPosition();
                     mPager.setCurrentItem(position, false);
                     break;
@@ -173,13 +171,20 @@ public class ArticleDetailActivity extends AppCompatActivity
     }
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
+        public int currentPosition;
+        private HashMap<Integer, ArticleDetailFragment> items;
+
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
+            items = new HashMap<Integer, ArticleDetailFragment>();
         }
 
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, position, object);
+            currentPosition = position;
+            Log.d(TAG, "setPrimaryItem " + position);
+
             ArticleDetailFragment fragment = (ArticleDetailFragment) object;
             if (fragment != null) {
                 mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
@@ -190,16 +195,33 @@ public class ArticleDetailActivity extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
             Log.d(TAG, "getItem " + position);
-            for(StackTraceElement e : Thread.currentThread().getStackTrace()){
-                //Log.d(TAG, "getItem " + position + ", " + e.toString());
+
+            ArticleDetailFragment item = items.get(position);
+            if(item == null) {
+                mCursor.moveToPosition(position);
+                item = ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
+                Log.d(TAG, "getItem item id " + mCursor.getLong(ArticleLoader.Query._ID));
+                items.put(position, item);
             }
-            mCursor.moveToPosition(position);
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
+            return item;
         }
 
         @Override
         public int getCount() {
             return (mCursor != null) ? mCursor.getCount() : 0;
+        }
+
+        // except the current item, remove transition photo from all other fragments
+        public void cleanFragment(){
+            Iterator it = items.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                int key = (int) pair.getKey();
+                ArticleDetailFragment item = (ArticleDetailFragment) pair.getValue();
+                if(key != currentPosition) {
+                    item.removeTransitionPhoto();
+                }
+            }
         }
     }
 }

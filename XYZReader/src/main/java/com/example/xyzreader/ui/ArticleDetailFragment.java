@@ -284,7 +284,7 @@ public class ArticleDetailFragment extends Fragment implements
 
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
-
+                            Log.d(TAG, volleyError.getMessage());
                         }
                     });
         } else {
@@ -327,18 +327,6 @@ public class ArticleDetailFragment extends Fragment implements
         //bindViews();
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.e(TAG, "onAttach()");
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
     public int getUpButtonFloor() {
         if (mPhotoContainerView == null || mPhotoView.getHeight() == 0) {
             return Integer.MAX_VALUE;
@@ -348,5 +336,9 @@ public class ArticleDetailFragment extends Fragment implements
         return mIsCard
                 ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
                 : mPhotoView.getHeight() - mScrollY;
+    }
+
+    public void removeTransitionPhoto(){
+        mPhotoView.setTransitionName(null);
     }
 }
