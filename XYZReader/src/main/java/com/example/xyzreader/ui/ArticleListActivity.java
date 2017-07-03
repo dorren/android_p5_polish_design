@@ -107,7 +107,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-//        unregisterReceiver(mRefreshingReceiver);
+        unregisterReceiver(mRefreshingReceiver);
     }
 
     private boolean mIsRefreshing = false;
@@ -178,23 +178,13 @@ public class ArticleListActivity extends AppCompatActivity implements
                             img, img.getTransitionName()
                     ).toBundle();
 
-                    boolean useMock = false;
-                    if(!useMock) {
-                        boolean animate = true;
-                        if(animate) {
-                            startActivity(new Intent(Intent.ACTION_VIEW,
-                                    ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), bundle);
-                        }else{ // don't animate
-                            startActivity(new Intent(Intent.ACTION_VIEW,
-                                    ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
-                        }
-                    }else {
-                        // test EmptyActivity
-                        Intent intent = new Intent(mContext, EmptyActivity.class);
-                        mCursor.moveToPosition(vh.getAdapterPosition());
-                        String imageURL = mCursor.getString(ArticleLoader.Query.THUMB_URL);
-                        intent.putExtra(Intent.EXTRA_TEXT, imageURL);
-                        startActivity(intent, bundle);
+                    boolean animate = true;
+                    if(animate) {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), bundle);
+                    }else{ // don't animate
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
                     }
                 }
             });

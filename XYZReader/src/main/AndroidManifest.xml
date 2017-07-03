@@ -49,19 +49,6 @@
             android:name=".data.ItemsProvider"
             android:authorities="com.example.xyzreader"
             android:exported="false" />
-
-        <activity
-            android:name=".ui.EmptyActivity"
-            android:theme="@style/Theme.Bacon.Details">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.ArticleListActivity" />
-        </activity>
-        <activity android:name=".Main2Activity"
-            android:theme="@style/Theme.Bacon.List"
-            >
-
-        </activity>
     </application>
 
 </manifest>
