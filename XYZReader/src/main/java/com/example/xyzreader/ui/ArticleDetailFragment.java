@@ -19,16 +19,23 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.transition.Transition;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.transition.Slide;
+import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -328,7 +335,51 @@ public class ArticleDetailFragment extends Fragment implements
         bindViews();
         if(mIsPrimary) {
             Log.d(TAG, "startTransition " + mItemId);
+
+
+
             getActivity().startPostponedEnterTransition();
+
+            getActivity().getWindow().getSharedElementEnterTransition().addListener(
+                    new android.transition.Transition.TransitionListener() {
+                @Override
+                public void onTransitionStart(android.transition.Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionEnd(android.transition.Transition transition) {
+                    Log.d("TransitionListener", " end");
+                    Interpolator interpolator =
+                            AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.linear_out_slow_in);
+                    View view = bodyView;
+                    view.setTranslationX(800);
+
+                    // now animate them back into their natural position
+                    view.animate()
+                            .translationY(0f)
+                            .translationX(0f)
+                            .alpha(1f)
+                            .setInterpolator(interpolator)
+                            .setDuration(1500)
+                            .start();
+                }
+
+                @Override
+                public void onTransitionCancel(android.transition.Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionPause(android.transition.Transition transition) {
+
+                }
+
+                @Override
+                public void onTransitionResume(android.transition.Transition transition) {
+
+                }
+            });
         }
     }
 
