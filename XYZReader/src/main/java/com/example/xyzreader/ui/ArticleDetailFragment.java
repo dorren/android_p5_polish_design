@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
@@ -59,7 +60,7 @@ public class ArticleDetailFragment extends Fragment implements
     private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ColorDrawable mStatusBarColorDrawable;
-    private ImageButton mFab;
+    private FloatingActionButton mFab;
 
     private int mTopInset;
     private View mPhotoContainerView;
@@ -170,7 +171,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     private void setupFab(){
         final Context context = getActivity();
-        mFab = (ImageButton) mRootView.findViewById(R.id.share_fab);
+        mFab = (FloatingActionButton) mRootView.findViewById(R.id.share_fab);
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
